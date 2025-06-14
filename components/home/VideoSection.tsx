@@ -46,14 +46,15 @@ export function VideoSection({
   }, [startTime, endTime]);
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-black relative overflow-hidden">
+    <section className="w-full min-h-[700px] bg-black relative overflow-hidden py-12 md:py-24 lg:py-32">
       <div className="absolute inset-0">
         <video
           ref={videoRef}
           src={videoSrc}
           muted
+          autoPlay
           playsInline
-          className="w-full h-full object-cover aspect-video"
+          className="w-full h-full object-cover"
           style={{
             filter: "brightness(0.6)",
             pointerEvents: "none",
@@ -61,7 +62,7 @@ export function VideoSection({
         />
       </div>
       <div className="relative z-10 container px-4 md:px-6">
-        <div className="flex flex-col items-center space-y-6 text-center">
+        <div className="flex flex-col items-center space-y-6 text-center mt-32">
           <div className="space-y-4">
             <h2 className="text-4xl font-bold tracking-tighter sm:text-6xl text-white">
               {title}

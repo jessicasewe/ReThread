@@ -96,7 +96,7 @@ export function Footer({
                 <span className="text-green-800 font-medium">
                   The Or Foundation
                 </span>
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                {/* <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div> */}
               </p>
             </div>
           </motion.div>
