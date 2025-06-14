@@ -1,7 +1,6 @@
 "use client";
 
 import { NavigationMenu } from "./NavigationMenu";
-// import { UserActions } from "./UserActions";
 
 interface Route {
   href: string;
@@ -24,7 +23,6 @@ export function MobileNavigation({
   adminRoutes,
   editorRoutes,
   user,
-  logout,
   onClose,
 }: MobileNavigationProps) {
   if (!isOpen) return null;
@@ -39,12 +37,6 @@ export function MobileNavigation({
           user={user}
           onLinkClick={onClose}
         />
-        {/* <UserActions
-          user={user}
-          logout={logout}
-          isMobile={true}
-          onAction={onClose}
-        /> */}
       </div>
     </div>
   );

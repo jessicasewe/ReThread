@@ -5,7 +5,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { useNavigationRoutes } from "@/hooks/use-navigation-routes";
 import { Logo } from "./Logo";
 import { NavigationMenu } from "./NavigationMenu";
-// import { UserActions } from "./UserActions";
 import { MobileMenuButton } from "./MobileMenuButton";
 import { MobileNavigation } from "./MobileNavigation";
 
