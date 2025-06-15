@@ -1,12 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { Product } from "@/types/product";
 import { useProducts } from "@/hooks/use-products";
 import { ProductsHeader } from "./ProductsHeader";
 import { ProductsFilter } from "./ProductsFilter";
 import { ProductGrid } from "./ProductGrid";
-import { ProductModal } from "./ProductModal";
 
 interface ProductsPageProps {
   initialProducts: Product[];
@@ -22,10 +20,9 @@ export function ProductsPage({
   showFilters = true,
 }: ProductsPageProps) {
   const { products, setFilteredProducts } = useProducts(initialProducts);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const handleProductClick = (product: Product) => {
-    setSelectedProduct(product);
+    console.log("Product clicked:", product);
   };
 
   return (
@@ -42,12 +39,6 @@ export function ProductsPage({
 
         <ProductGrid products={products} onProductClick={handleProductClick} />
       </div>
-
-      <ProductModal
-        product={selectedProduct}
-        open={!!selectedProduct}
-        onClose={() => setSelectedProduct(null)}
-      />
     </div>
   );
 }
