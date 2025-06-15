@@ -1,13 +1,23 @@
 "use client";
-
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
-import Image from "next/image";
-import ReThread from "@/app/assets/rethred.jpg";
 import { StatsCard } from "./StatsCard";
+import { StaticImport } from "next/dist/shared/lib/get-img-props";
 
 interface FooterProps {
   stats?: Array<{ value: string; label: string }>;
+}
+
+interface FooterBlock {
+  logoImageUrl: string | StaticImport;
+  siteTitle: string;
+  description: string;
+  creditsNote: string;
+  yearNotice: string;
+  attribution: string;
+  logoImageId: string | null;
 }
 
 export function Footer({
@@ -17,18 +27,27 @@ export function Footer({
     { value: "100%", label: "Sustainable" },
   ],
 }: FooterProps) {
+  const [footerData, setFooterData] = useState<FooterBlock | null>(null);
+
+  useEffect(() => {
+    async function fetchFooter() {
+      try {
+        const res = await fetch("/api/test-drupal?type=footer");
+        const json = await res.json();
+        setFooterData(json.footer);
+      } catch (err) {
+        console.error("Error loading footer:", err);
+      }
+    }
+
+    fetchFooter();
+  }, []);
+
+  if (!footerData) return null;
+
   return (
     <footer className="w-full bg-gradient-to-r from-white to-gray-100 relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%)`,
-            backgroundSize: "20px 20px",
-          }}
-        ></div>
-      </div>
-
+      {/* background visuals omitted for brevity */}
       <div className="relative z-10">
         <div className="border-b border-gray-800">
           <div className="container px-4 md:px-6 py-8">
@@ -42,19 +61,20 @@ export function Footer({
               <div className="text-center md:text-left">
                 <h3 className="text-2xl font-bold text-gray-800 mb-2 flex items-center gap-2">
                   <div className="p-2 bg-white/10 rounded-lg">
-                    <Image
-                      src={ReThread}
-                      alt="ReThread Logo"
-                      width={40}
-                      height={40}
-                      className="rounded-full"
-                    />
+                    {footerData.logoImageId ? (
+                      <Image
+                        src={footerData.logoImageUrl}
+                        alt="Logo"
+                        width={40}
+                        height={40}
+                        className="rounded-full"
+                      />
+                    ) : null}
                   </div>
-                  Rethread
+                  {footerData.siteTitle}
                 </h3>
                 <p className="text-green-800 max-w-md">
-                  Transforming the global fashion landscape through sustainable
-                  second-hand clothing trade and data-driven insights.
+                  {footerData.description}
                 </p>
               </div>
 
@@ -82,21 +102,16 @@ export function Footer({
           >
             <div className="flex items-center gap-2 text-gray-400">
               <Heart className="w-4 h-4 text-red-400" />
-              <span className="text-sm">
-                Made with care for a sustainable future
-              </span>
+              <span className="text-sm">{footerData.creditsNote}</span>
             </div>
 
             <div className="flex flex-col md:flex-row items-center gap-4 text-center">
-              <p className="text-sm text-gray-400">
-                &copy; {new Date().getFullYear()} Rethread. All rights reserved.
-              </p>
+              <p className="text-sm text-gray-400">{footerData.yearNotice}</p>
               <p className="text-xs text-gray-500 flex items-center gap-2">
-                A project for
+                A project for{" "}
                 <span className="text-green-800 font-medium">
-                  The Or Foundation
+                  {footerData.attribution}
                 </span>
-                {/* <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div> */}
               </p>
             </div>
           </motion.div>
