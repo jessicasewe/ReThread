@@ -31,7 +31,7 @@ export function ProductModal({ product, open, onClose }: ProductModalProps) {
           </p>
           <p>{product.description}</p>
           <p className="font-semibold text-xl text-green-800">
-            {product.price}
+            ₵{product.price}
           </p>
         </div>
       </DialogContent>
