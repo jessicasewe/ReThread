@@ -32,7 +32,7 @@ export default async function Products() {
     <ProductsPage
       initialProducts={products}
       title="Our Products"
-      description="Products fetched from Drupal 11 via JSON:API"
+      description="Explore our sustainable fashion products and initiatives"
     />
   );
 }

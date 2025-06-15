@@ -11,101 +11,105 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { BarChart, LineChart } from "lucide-react";
+import { BarChart, LineChart, Loader2 } from "lucide-react";
 
-// Data from the provided table
-const receivingCountries = [
-  {
-    country: "Mozambique",
-    metricTons: 191570,
-    population: 32163040,
-    gdpPerCapita: 500,
-    itemsPerCapita: 31,
-    gdpPerCapitaPerItem: 16,
-  },
-  {
-    country: "Ghana",
-    metricTons: 149181,
-    population: 31732130,
-    gdpPerCapita: 2445,
-    itemsPerCapita: 25,
-    gdpPerCapitaPerItem: 99,
-  },
-  {
-    country: "Togo",
-    metricTons: 63042,
-    population: 8478240,
-    gdpPerCapita: 992,
-    itemsPerCapita: 39,
-    gdpPerCapitaPerItem: 25,
-  },
-  {
-    country: "Haiti",
-    metricTons: 26233,
-    population: 11541680,
-    gdpPerCapita: 1815,
-    itemsPerCapita: 12,
-    gdpPerCapitaPerItem: 152,
-  },
-];
+// Types for the transformed data
+interface CountryData {
+  country: string;
+  metricTons: number;
+  population: number;
+  gdpPerCapita: number;
+  itemsPerCapita: number;
+  gdpPerCapitaPerItem: number;
+}
 
-const sendingCountries = [
-  {
-    country: "USA",
-    metricTons: 720846,
-    population: 331893740,
-    gdpPerCapita: 69288,
-    itemsPerCapita: 11,
-    gdpPerCapitaPerItem: 6076,
-  },
-  {
-    country: "Germany",
-    metricTons: 436426,
-    population: 83129290,
-    gdpPerCapita: 50802,
-    itemsPerCapita: 28,
-    gdpPerCapitaPerItem: 1843,
-  },
-  {
-    country: "United Kingdom",
-    metricTons: 335152,
-    population: 67326570,
-    gdpPerCapita: 47334,
-    itemsPerCapita: 26,
-    gdpPerCapitaPerItem: 1811,
-  },
-  {
-    country: "France",
-    metricTons: 157790,
-    population: 67499340,
-    gdpPerCapita: 43519,
-    itemsPerCapita: 12,
-    gdpPerCapitaPerItem: 3546,
-  },
-];
+interface ApiResponse {
+  success: boolean;
+  usingFallback?: boolean;
+  error?: string;
+  data: {
+    receiving: CountryData[];
+    sending: CountryData[];
+  };
+  receivingCountries?: CountryData[];
+  sendingCountries?: CountryData[];
+}
 
 export function DataVisualization() {
   const [activeTab, setActiveTab] = useState("receiving");
   const [chartType, setChartType] = useState<"bar" | "comparison">("bar");
+  const [receivingCountries, setReceivingCountries] = useState<CountryData[]>([]);
+  const [sendingCountries, setSendingCountries] = useState<CountryData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [usingFallback, setUsingFallback] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);
 
+  // Fetch data from our API route
   useEffect(() => {
-    if (chartRef.current) {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        setUsingFallback(false);
+        
+        // Use our Next.js API route
+        const response = await fetch('/api/test-drupal?type=clothing_trade');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const apiResponse: ApiResponse = await response.json();
+        
+        if (!apiResponse.success) {
+          throw new Error(apiResponse.error || 'Failed to fetch data');
+        }
+        
+        // Handle both possible response formats
+        const receivingData = apiResponse.data?.receiving || apiResponse.receivingCountries || [];
+        const sendingData = apiResponse.data?.sending || apiResponse.sendingCountries || [];
+        
+        setReceivingCountries(receivingData);
+        setSendingCountries(sendingData);
+        setUsingFallback(apiResponse.usingFallback || false);
+        
+        if (apiResponse.error) {
+          setError(apiResponse.error);
+        }
+        
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch data');
+        
+        // If our API route fails completely, we could still have a client-side fallback
+        // but the API route should handle this with its own fallback data
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (chartRef.current && !loading) {
       // Clear previous chart
       d3.select(chartRef.current).selectAll("*").remove();
 
-      const data =
-        activeTab === "receiving" ? receivingCountries : sendingCountries;
+      const data = activeTab === "receiving" ? receivingCountries : sendingCountries;
 
-      if (chartType === "bar") {
-        renderBarChart(data);
-      } else {
-        renderComparisonChart(data);
+      if (data.length > 0) {
+        if (chartType === "bar") {
+          renderBarChart(data);
+        } else {
+          renderComparisonChart(data);
+        }
       }
     }
-  }, [activeTab, chartType]);
+  }, [activeTab, chartType, receivingCountries, sendingCountries, loading]);
 
-  const renderBarChart = (data: typeof receivingCountries) => {
+  const renderBarChart = (data: CountryData[]) => {
     const width = chartRef.current!.clientWidth;
     const height = 450;
     const margin = { top: 30, right: 40, bottom: 80, left: 100 };
@@ -317,7 +321,7 @@ export function DataVisualization() {
       .style("opacity", 1);
   };
 
-  const renderComparisonChart = (data: typeof receivingCountries) => {
+  const renderComparisonChart = (data: CountryData[]) => {
     const width = chartRef.current!.clientWidth;
     const height = 450;
     const margin = { top: 30, right: 100, bottom: 80, left: 100 };
@@ -577,6 +581,7 @@ export function DataVisualization() {
               variant={chartType === "bar" ? "default" : "outline"}
               size="sm"
               onClick={() => setChartType("bar")}
+              disabled={loading}
               className={
                 chartType === "bar"
                   ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md hover:from-emerald-600 hover:to-teal-700"
@@ -590,6 +595,7 @@ export function DataVisualization() {
               variant={chartType === "comparison" ? "default" : "outline"}
               size="sm"
               onClick={() => setChartType("comparison")}
+              disabled={loading}
               className={
                 chartType === "comparison"
                   ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md hover:from-emerald-600 hover:to-teal-700"
@@ -603,10 +609,27 @@ export function DataVisualization() {
         </div>
       </CardHeader>
       <CardContent className="p-6">
-        <div
-          ref={chartRef}
-          className="w-full h-[450px] rounded-lg overflow-hidden"
-        />
+        {loading ? (
+          <div className="w-full h-[450px] flex items-center justify-center rounded-lg bg-gray-50">
+            <div className="flex flex-col items-center space-y-3">
+              <Loader2 className="h-8 w-8 animate-spin text-gray-600" />
+              <p className="text-gray-600 font-medium">Loading data...</p>
+            </div>
+          </div>
+        ) : error ? (
+          <div className="w-full h-[450px] flex items-center justify-center rounded-lg bg-red-50 border border-red-200">
+            <div className="text-center">
+              <p className="text-red-600 font-medium mb-2">⚠️ API Connection Error</p>
+              <p className="text-red-500 text-sm">Using fallback data. Error: {error}</p>
+            </div>
+          </div>
+        ) : (
+          <div
+            ref={chartRef}
+            className="w-full h-[450px] rounded-lg overflow-hidden"
+          />
+        )}
+        
         <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-gray-50 rounded-lg border border-green-100">
           <p className="text-sm text-gray-700 leading-relaxed">
             <span className="font-semibold text-gray-800">
@@ -618,6 +641,11 @@ export function DataVisualization() {
               ? "These visualizations reveal how second-hand clothing imports affect developing economies, showing the relationship between trade volume, economic indicators, and per-capita impact across communities."
               : "Data illustrates the massive scale of clothing exports from developed nations, highlighting the global fashion redistribution system and its economic implications for both sending and receiving regions."}
           </p>
+          {error && (
+            <p className="text-xs text-amber-600 mt-2">
+              🔄 Currently displaying fallback data due to API connectivity issues.
+            </p>
+          )}
         </div>
       </CardContent>
     </Card>

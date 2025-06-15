@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import ReThread from "@/app/assets/rethred.jpg";
+import ReThread from "@/app/assets/or-logo.jpg";
 
 export function Logo() {
   return (
