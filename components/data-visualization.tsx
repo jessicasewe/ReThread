@@ -554,12 +554,12 @@ export function DataVisualization() {
 
   return (
     <Card className="w-full shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
-      <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-100">
-        <div className="flex justify-between items-center">
+      <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-100 px-4 sm:px-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <Tabs
             value={activeTab}
             onValueChange={setActiveTab}
-            className="w-[400px]"
+            className="w-full max-w-xs sm:max-w-sm md:max-w-md"
           >
             <TabsList className="bg-white shadow-sm border border-gray-200">
               <TabsTrigger
