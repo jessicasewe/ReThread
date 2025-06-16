@@ -4,6 +4,24 @@ ReThread is a modern web application focused on sustainable fashion, product man
 
 ---
 
+## 🌐 Website Routes
+
+Below are the available routes for [www.thereadthread.com](https://www.thereadthread.com), with a short description for each:
+
+| Route                              | Description                                                                 |
+|------------------------------------|-----------------------------------------------------------------------------|
+| `/`                                | **Home** – Welcome page introducing ReThread and its mission.               |
+| `/products`                        | **Products** – Browse all sustainable fashion products.                     |
+| `/products/[id]`                   | **Product Details** – View detailed information about a specific product.   |
+| `/articles`                        | **Articles** – Read articles about sustainability and fashion.              |
+| `/articles/[id]`                   | **Article Details** – Full view of a selected article.                      |
+| `/about`                           | **About** – Learn more about ReThread and the team.                         |
+| `/contact`                         | **Contact** – Get in touch with the ReThread team.                          |
+| `/api/test-drupal`                 | **API Test** – Endpoint for testing Drupal backend connectivity.            |
+| `/404`                             | **Not Found** – Custom 404 error page.                                      |
+
+---
+
 ## 📁 Project Structure
 
 ```
