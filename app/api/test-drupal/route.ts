@@ -258,7 +258,7 @@ export async function GET(request: Request) {
         includeParams = '?include=field_image,field_tags,uid';
         break;
       case 'clothing_trade':
-        endpoint = 'node/clothing_trade_volume';
+        endpoint = 'node/country_trade_impact';
         includeParams = '';
         break;
       case 'footer':
