@@ -30,9 +30,10 @@ export function FullArticleView({ article, onBack }: FullArticleViewProps) {
         />
       </div>
 
-      <p className="text-gray-800 leading-relaxed">
-        {article.content || article.description}
-      </p>
+      <div
+        className="text-gray-800 leading-relaxed prose"
+        dangerouslySetInnerHTML={{ __html: article.content || article.description }}
+      />
     </div>
   );
 }
