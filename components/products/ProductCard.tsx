@@ -50,7 +50,7 @@ export function ProductCard({
 
       {(showPrice || showViewDetails) && (
         <CardFooter className="flex justify-between items-center">
-          {showPrice && <p className="font-medium text-lg">{product.price}</p>}
+          {showPrice && <p className="font-medium text-lg">₵{product.price}</p>}
           {showViewDetails && (
             <Button
               size="sm"
